@@ -1,7 +1,11 @@
-import MySQLdb
+import time, datetime, math, random
+import HalcyonNHLdb
 
 
-class HalcyonNHLDB():
+class SAPS():
 
-	def __init__(self):
-		self.db = MySQLdb.connect(passwd=config["mysql"]["pw"],host="localhost",user="root",db="halcyonnhl")
+	def __init__(self,season):
+		self.stats_db = HalcyonNHLdb.HalcyonNHLdb()
+		self.season = season
+		self.coefficients = {}
+		self.build_date = datetime.datetime.now()
