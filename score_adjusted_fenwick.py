@@ -4,7 +4,7 @@
 
 import time, datetime, math, random
 import numpy
-import HalcyonNHLdb
+import HalcyonNHLdb, Game
 from config import CONFIG as config
 
 
@@ -19,7 +19,6 @@ class SAF():
 
 	def run_season(self):
 
-		print "Num teams2: ", self.num_teams
 		saf_mat = numpy.zeros(shape=(self.num_teams,82))
 		win_mat = numpy.zeros(shape=(self.num_teams,82))
 		team_counter = 0
@@ -30,16 +29,19 @@ class SAF():
 			game_counter = 0
 			for game_id in team_game_ids:
 				gid = game_id[0]
-				win_mat[team_counter,game_counter] = self.get_game_result(team, gid)
-				saf_mat[team_counter,game_counter] = self.get_SAF(team, gid)
+
+				game = Game.Game(self.season, gid, team)
+
+				#win_mat[team_counter,game_counter] = self.get_game_result(team, gid)
+				#saf_mat[team_counter,game_counter] = self.get_SAF(team, gid)
 
 				game_counter +=1
+				break
 
 			team_counter +=1
 
 			break
 		
-
 
 	def get_SAF(self, team, game_id):
 
@@ -79,45 +81,7 @@ class SAF():
 
 		return SAF
 
-	def get_fenwick(self, team, game_id, score_diff):
 
-		query_string = "SELECT COUNT(*) FROM Shots{0} WHERE gameID={1} AND team=\'{2}\' AND scoreDiff={3};".format(self.season,game_id,team,score_diff)
-		print "Query: ", query_string
-		try:
-			num_shots = int(self.stats_db.execute_num_query(query_string))
-		except:
-			num_shots = 0
-
-		query_string = "SELECT COUNT(*) FROM Misses{0} WHERE gameID={1} AND team=\'{2}\' AND scoreDiff={3};".format(self.season,game_id,team,score_diff)
-		print "Query: ", query_string
-		try:
-			num_misses = int(self.stats_db.execute_num_query(query_string))
-		except:
-			num_misses = 0
-		team_fen = num_shots+num_misses
-		
-		query_string = "SELECT COUNT(*) FROM Shots{0} WHERE gameID={1} AND opponent=\'{2}\' AND scoreDiff={3};".format(self.season,game_id,team,score_diff)
-		print "Query: ", query_string
-		try:
-			num_shots = int(self.stats_db.execute_num_query(query_string))
-		except:
-			num_shots = 0
-		query_string = "SELECT COUNT(*) FROM Misses{0} WHERE gameID={1} AND opponent=\'{2}\' AND scoreDiff={3};".format(self.season,game_id,team,score_diff)
-		print "Query: ", query_string
-		try:
-			num_misses = int(self.stats_db.execute_num_query(query_string))
-		except:
-			num_misses = 0
-		opp_fen = num_shots+num_misses
-
-		if team_fen+opp_fen > 0:
-			rel_fen = 100.*team_fen/(team_fen+opp_fen)
-		else:
-			rel_fen = -1
-		return rel_fen
-
-	def get_game_result(self, team, game_id):
-		return 2
 
 
 
