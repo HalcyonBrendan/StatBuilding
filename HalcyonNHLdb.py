@@ -11,7 +11,7 @@ class HalcyonNHLdb():
 		self.cursor.execute(command_string)
 		self.db.commit()
 
-	def execute_str_query(self, query_string):
+	def execute_query(self, query_string):
 		self.cursor.execute(query_string)
 		sql_out = self.cursor.fetchall()
 		return sql_out
@@ -19,7 +19,10 @@ class HalcyonNHLdb():
 	def execute_num_query(self, query_string):
 		self.cursor.execute(query_string)
 		sql_out = self.cursor.fetchall()
-		return float(self.strip_unwanted_num_text(str(sql_out)))
+		try:
+			return float(self.strip_unwanted_num_text(str(sql_out)))
+		except:
+			return null
 
 	def build_query(self):
 		print "Build query"
