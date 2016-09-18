@@ -29,60 +29,49 @@ class SAF():
 			game_counter = 0
 			for game_id in team_game_ids:
 				
-				print game_id[0], " game ", game_counter+1, " for ", team
+				#print game_id[0], " game ", game_counter+1, " for ", team
 				gid = game_id[0]
 
 				game = Game.Game(self.season, gid, team)
 
-				#win_mat[team_counter,game_counter] = self.get_game_result(team, gid)
-				#saf_mat[team_counter,game_counter] = self.get_SAF(team, gid)
-
-				#print game.state_times, "\n"
-				#print game.team_events_by_state, "\n"
-				#print game.opp_events_by_state, "\n"
+				win_mat[team_counter,game_counter] = game.get_game_result()
+				saf_mat[team_counter,game_counter] = self.compute_SAF(game)
 
 				game_counter +=1
 
+			print team
+			print win_mat[team_counter]
+			print saf_mat[team_counter]
 			team_counter +=1
 
-			#break
-		
 
-	def get_SAF(self, team, game_id):
+	# Includes pp, pk, and EN events for now
+	def compute_SAF(self, game):
 
-		Fu2_avg = 44
-		Fu1_avg = 46.1
-		Ftied_avg = 50
-		Fd1_avg = 53.9
-		Fd2_avg = 56
+		fen_u2_avg = 44
+		fen_u1_avg = 46.1
+		fen_tied_avg = 50
+		fen_d1_avg = 53.9
+		fen_d2_avg = 56
 
-		print team, " ", game_id
-		Fu2 = self.get_fenwick(team, game_id, 2)
-		print Fu2
-		if Fu2 < 0:
-			Fu2 = Fu2_avg
-		Fu1 = self.get_fenwick(team, game_id, 1)
-		print Fu1
-		if Fu1 < 0:
-			Fu1 = Fu1_avg
-		Ftied = self.get_fenwick(team, game_id, 0)
-		print Ftied
-		if Ftied < 0:
-			Ftied = Ftied_avg
-		Fd1 = self.get_fenwick(team, game_id, -1)
-		print Fd1
-		if Fd1 < 0:
-			Fd1 = Fd1_avg
-		Fd2 = self.get_fenwick(team, game_id, -2)
-		print Fd2
-		if Fd2 < 0:
-			Fd2 = Fd2_avg
+		state_times = game.get_state_times()
+		time_u2 = state_times[5]/60.
+		time_u1 = state_times[4]/60.
+		time_tied = state_times[3]/60.
+		time_d1 = state_times[2]/60.
+		time_d2 = state_times[1]/60.
 
-		print Fu2, " ", Fu1, " ", Ftied, " ", Fd1, " ", Fd2
+		fen_events_by_state = game.get_rel_fen_by_state()
+		fen_u2 = fen_events_by_state[5]
+		fen_u1 = fen_events_by_state[4]
+		fen_tied = fen_events_by_state[3]
+		fen_d1 = fen_events_by_state[2]
+		fen_d2 = fen_events_by_state[1]
 
-		SAF = (3.75*(Fu2-44)+8.46*(Fu1-46.1)+17.94*(Ftied-50)+8.46*(Fd1-53.9)+3.75*(Fd2-56))/42.36 + 50
+		#print "times: ", time_u2, " ", time_u1, " ", time_tied, " ", time_d1, " ", time_d2
+		#print "fens: ", fen_u2, " ", fen_u1, " ", fen_tied, " ", fen_d1, " ", fen_d2
 
-		print SAF
+		SAF = (time_u2*(fen_u2-fen_u2_avg)+time_u1*(fen_u1-fen_u1_avg)+time_tied*(fen_tied-fen_tied_avg)+time_d1*(fen_d1-fen_d1_avg)+time_d2*(fen_d2-fen_d2_avg))/(time_u2+time_u1+time_tied+time_d1+time_d2) + 50
 
 		return SAF
 

@@ -9,13 +9,32 @@ class Game():
 	def __init__(self, season_string, game_id, team):
 		stats_db = HalcyonNHLdb.HalcyonNHLdb()
 
-		query_string = "SELECT eventID,gameID,shooter,team,opponent,period,time,state,strength,scoreDiff FROM Shots{0} WHERE gameID={1} AND period<4 AND distance<70 ORDER BY eventID".format(season_string,game_id)
+		self.game_id = game_id
+		self.team = team
+
+		query_string = "SELECT winner,gameType FROM Games{0} WHERE gameID={1} AND team=\'{2}\';".format(season_string,self.game_id,self.team)
+		self.outcome = stats_db.execute_query(query_string)
+		self.gameType = self.outcome[0][1]
+		self.result = 5
+		if self.outcome[0][0] == self.team and self.gameType == "RE":
+			self.result  = 1
+		elif self.outcome[0][0] != self.team and self.gameType == "RE":
+			self.result = 0
+		elif self.outcome[0][0] != self.team and self.gameType == "OT":
+			self.result = 2
+		elif self.outcome[0][0] == self.team and self.gameType == "OT":
+			self.result = 3
+		elif self.outcome[0][0] != self.team and self.gameType == "SO":
+			self.result = 4
+		
+
+		query_string = "SELECT eventID,gameID,shooter,team,opponent,period,time,state,strength,scoreDiff FROM Shots{0} WHERE gameID={1} AND period<4 AND distance<70 ORDER BY eventID;".format(season_string,self.game_id)
 		self.shots = stats_db.execute_query(query_string)
 
-		query_string = "SELECT eventID,gameID,shooter,team,opponent,period,time,state,strength,scoreDiff FROM Misses{0} WHERE gameID={1} AND period<4 AND distance<70 ORDER BY eventID".format(season_string,game_id)
+		query_string = "SELECT eventID,gameID,shooter,team,opponent,period,time,state,strength,scoreDiff FROM Misses{0} WHERE gameID={1} AND period<4 AND distance<70 ORDER BY eventID;".format(season_string,self.game_id)
 		self.misses = stats_db.execute_query(query_string)
 
-		query_string = "SELECT eventID,gameID,shooter,team,opponent,period,time,state,strength,scoreDiff FROM Goals{0} WHERE gameID={1} AND period<4 AND distance<70 ORDER BY eventID".format(season_string,game_id)
+		query_string = "SELECT eventID,gameID,shooter,team,opponent,period,time,state,strength,scoreDiff FROM Goals{0} WHERE gameID={1} AND period<4 AND distance<70 ORDER BY eventID;".format(season_string,self.game_id)
 		self.goals = stats_db.execute_query(query_string)
 
 		self.num_shots = len(self.shots)
@@ -29,7 +48,7 @@ class Game():
 		self.state_times = []
 		self.team_events_by_state = []
 		self.opp_events_by_state = []
-		self.parse_game(team)
+		self.parse_game()
 
 
 	# merges all fenwick events into a two lists of tuples ordered by eventID (time in game)
@@ -72,7 +91,7 @@ class Game():
 				goal_counter += 1
 
 
-	def parse_game(self, team):
+	def parse_game(self):
 
 		start_state_time = 0
 		end_state_time = 0
@@ -86,8 +105,9 @@ class Game():
 
 		for i in range(0,self.num_game_events):
 
-			if self.game_events[i][3] == team:
+			if self.game_events[i][3] == self.team:
 				self.team_events_by_state[curr_state] += 1
+				
 				if self.game_events[i][-1]=='goal':
 					end_state_time = self.game_events[i][6]
 					end_state_period = self.game_events[i][5]
@@ -123,9 +143,27 @@ class Game():
 
 
 
-	def get_fenwick(self, team, game_id, score_diff):
-		return
+	def get_rel_fen_by_state(self):
+
+		rel_fen_by_state = numpy.zeros(len(self.team_events_by_state))
+
+		for i in range(0,len(self.team_events_by_state)):
+			if min(self.team_events_by_state[i],self.opp_events_by_state[i]) > 0:
+				rel_fen_by_state[i] = 100*self.team_events_by_state[i]/(self.team_events_by_state[i]+self.opp_events_by_state[i])
+			elif self.team_events_by_state[i] > 0:
+				rel_fen_by_state[i] = 100
+			elif self.opp_events_by_state[i] > 0:
+				rel_fen_by_state[i] = 0
+			else:
+				rel_fen_by_state[i] = 0
+
+		return rel_fen_by_state
+
+	def get_state_times(self):
+		return self.state_times
+
+	def get_game_result(self):
+		return self.result
 
 
-	def get_game_result(self, team, game_id):
-		return 2
+
