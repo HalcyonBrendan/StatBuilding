@@ -28,6 +28,8 @@ class SAF():
 
 			game_counter = 0
 			for game_id in team_game_ids:
+				
+				print game_id[0], " game ", game_counter+1, " for ", team
 				gid = game_id[0]
 
 				game = Game.Game(self.season, gid, team)
@@ -35,12 +37,15 @@ class SAF():
 				#win_mat[team_counter,game_counter] = self.get_game_result(team, gid)
 				#saf_mat[team_counter,game_counter] = self.get_SAF(team, gid)
 
+				#print game.state_times, "\n"
+				#print game.team_events_by_state, "\n"
+				#print game.opp_events_by_state, "\n"
+
 				game_counter +=1
-				break
 
 			team_counter +=1
 
-			break
+			#break
 		
 
 	def get_SAF(self, team, game_id):
@@ -88,7 +93,7 @@ class SAF():
 if __name__ == "__main__":
 
 	# Initialize class with year on which you want to build SAPS
-	saf = SAF("20152016")
+	saf = SAF("20142015")
 	saf.run_season()		
 
 
