@@ -48,11 +48,11 @@ class SAF():
 	# Includes pp, pk, and EN events for now
 	def compute_SAF(self, game):
 
-		fen_u2_avg = 44
-		fen_u1_avg = 46.1
-		fen_tied_avg = 50
-		fen_d1_avg = 53.9
-		fen_d2_avg = 56
+		fen_u2_avg = .44
+		fen_u1_avg = .461
+		fen_tied_avg = .50
+		fen_d1_avg = .539
+		fen_d2_avg = .56
 
 		state_times = game.get_state_times()
 		time_u2 = state_times[5]/60.
@@ -71,7 +71,7 @@ class SAF():
 		#print "times: ", time_u2, " ", time_u1, " ", time_tied, " ", time_d1, " ", time_d2
 		#print "fens: ", fen_u2, " ", fen_u1, " ", fen_tied, " ", fen_d1, " ", fen_d2
 
-		SAF = (time_u2*(fen_u2-fen_u2_avg)+time_u1*(fen_u1-fen_u1_avg)+time_tied*(fen_tied-fen_tied_avg)+time_d1*(fen_d1-fen_d1_avg)+time_d2*(fen_d2-fen_d2_avg))/(time_u2+time_u1+time_tied+time_d1+time_d2) + 50
+		SAF = (time_u2*(fen_u2-fen_u2_avg)+time_u1*(fen_u1-fen_u1_avg)+time_tied*(fen_tied-fen_tied_avg)+time_d1*(fen_d1-fen_d1_avg)+time_d2*(fen_d2-fen_d2_avg))/(time_u2+time_u1+time_tied+time_d1+time_d2) + .5
 
 		return SAF
 
@@ -82,7 +82,7 @@ class SAF():
 if __name__ == "__main__":
 
 	# Initialize class with year on which you want to build SAPS
-	saf = SAF("20142015")
+	saf = SAF("20152016")
 	saf.run_season()		
 
 

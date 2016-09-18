@@ -149,9 +149,9 @@ class Game():
 
 		for i in range(0,len(self.team_events_by_state)):
 			if min(self.team_events_by_state[i],self.opp_events_by_state[i]) > 0:
-				rel_fen_by_state[i] = 100*self.team_events_by_state[i]/(self.team_events_by_state[i]+self.opp_events_by_state[i])
+				rel_fen_by_state[i] = self.team_events_by_state[i]/(self.team_events_by_state[i]+self.opp_events_by_state[i])
 			elif self.team_events_by_state[i] > 0:
-				rel_fen_by_state[i] = 100
+				rel_fen_by_state[i] = 1
 			elif self.opp_events_by_state[i] > 0:
 				rel_fen_by_state[i] = 0
 			else:
