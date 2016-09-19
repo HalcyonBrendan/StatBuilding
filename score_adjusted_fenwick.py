@@ -1,5 +1,5 @@
 ''' For each game in a specified season, compute the relative score-adjusted fenwick values.
-	For now, formula computed to http://puckon.net/articles/improving-our-score-adjustment.php	
+	For now, formula computed according to http://puckon.net/articles/improving-our-score-adjustment.php	
 '''
 
 import time, datetime, math, random
@@ -16,11 +16,13 @@ class SAF():
 		self.build_date = datetime.datetime.now()
 		self.teams = config["teams"]
 		self.num_teams = len(self.teams)
+		self.saf_mat = []
+		self.win_mat = []
 
 	def run_season(self):
 
-		saf_mat = numpy.zeros(shape=(self.num_teams,82))
-		win_mat = numpy.zeros(shape=(self.num_teams,82))
+		self.saf_mat = numpy.zeros(shape=(self.num_teams,82))
+		self.win_mat = numpy.zeros(shape=(self.num_teams,82))
 		team_counter = 0
 		for team in self.teams:
 			query_string = "SELECT gameID FROM Games{0} WHERE team=\'{1}\' ORDER BY gameID".format(self.season,team)
@@ -34,14 +36,12 @@ class SAF():
 
 				game = Game.Game(self.season, gid, team)
 
-				win_mat[team_counter,game_counter] = game.get_game_result()
-				saf_mat[team_counter,game_counter] = self.compute_SAF(game)
+				self.win_mat[team_counter,game_counter] = game.get_game_result()
+				self.saf_mat[team_counter,game_counter] = self.compute_SAF(game)
 
 				game_counter +=1
 
-			print team
-			print win_mat[team_counter]
-			print saf_mat[team_counter]
+			print "Computing SAF for ", team
 			team_counter +=1
 
 
@@ -75,8 +75,11 @@ class SAF():
 
 		return SAF
 
+	def get_saf_matrix(self):
+		return self.saf_mat
 
-
+	def get_win_matrix(self):
+		return self.win_mat
 
 
 if __name__ == "__main__":
