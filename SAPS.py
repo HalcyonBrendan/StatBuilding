@@ -1,5 +1,6 @@
 import time, datetime, math, random
 import numpy
+import matplotlib.pyplot as plt
 import HalcyonNHLdb
 import Score_Adjusted_Fenwick as SAF
 from config import CONFIG as config
@@ -39,13 +40,25 @@ class SAPS():
 			print "Team: ", team
 			print "Results: ", win_mat[team_counter]
 			print "SAF: ", saf_mat[team_counter]
-			print "SAPS: ", self.SAPS_mat[team_counter] 
+			print "SAPS: ", self.SAPS_mat[team_counter]
+			plt.figure(team_counter+1)
+			games_x = numpy.arange(1,83)
+			saps_y = self.SAPS_mat[team_counter]
+			linear_fit = numpy.poly1d(numpy.polyfit(games_x,saps_y,1))
+			fit_line = linear_fit(numpy.linspace(1,82,82))
+			plt.plot(games_x,saps_y,'ro',games_x,fit_line,'b-')
+			plt.title(team)
+			plt.xlabel('Game Number')
+			plt.ylabel('Score Adjusted Fenwick')
+			plt.grid(True)
+			plt.axis([1,82,0,1])
 			team_counter += 1
 
+		plt.show()
 
 	def build_SAPS(self,game_SAF,game_result):
 
-		alpha = 0.5
+		alpha = 0
 
 		game_SAPS = (1-alpha)*game_SAF + alpha*game_result
 
