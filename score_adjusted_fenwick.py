@@ -18,11 +18,13 @@ class SAF():
 		self.num_teams = len(self.teams)
 		self.saf_mat = []
 		self.win_mat = []
+		self.game_id_mat = []
 
 	def run_season(self):
 
 		self.saf_mat = numpy.zeros(shape=(self.num_teams,82))
 		self.win_mat = numpy.zeros(shape=(self.num_teams,82))
+		self.game_id_mat = numpy.zeros(shape=(self.num_teams,82))
 		team_counter = 0
 		for team in self.teams:
 			query_string = "SELECT gameID FROM Games{0} WHERE team=\'{1}\' ORDER BY gameID".format(self.season,team)
@@ -38,6 +40,7 @@ class SAF():
 
 				self.win_mat[team_counter,game_counter] = game.get_game_result()
 				self.saf_mat[team_counter,game_counter] = self.compute_SAF(game)
+				self.game_id_mat[team_counter,game_counter] = int(gid)
 
 				game_counter +=1
 
@@ -80,6 +83,10 @@ class SAF():
 
 	def get_win_matrix(self):
 		return self.win_mat
+
+	def get_game_id_matrix(self):
+		return self.game_id_mat
+
 
 
 if __name__ == "__main__":
