@@ -19,22 +19,24 @@ class SAF():
 		self.saf_mat = []
 		self.win_mat = []
 		self.game_id_mat = []
+		self.is_home_mat = []
 
 	def run_season(self):
 
 		self.saf_mat = numpy.zeros(shape=(self.num_teams,82))
 		self.win_mat = numpy.zeros(shape=(self.num_teams,82))
 		self.game_id_mat = numpy.zeros(shape=(self.num_teams,82))
+		self.is_home_mat = numpy.zeros(shape=(self.num_teams,82))
 		team_counter = 0
 		for team in self.teams:
-			query_string = "SELECT gameID FROM Games{0} WHERE team=\'{1}\' ORDER BY gameID".format(self.season,team)
-			team_game_ids = self.stats_db.execute_query(query_string)
+			query_string = "SELECT gameID,location FROM Games{0} WHERE team=\'{1}\' ORDER BY gameID".format(self.season,team)
+			game_tuples = self.stats_db.execute_query(query_string)
 
 			game_counter = 0
-			for game_id in team_game_ids:
+			for game_tuple in game_tuples:
 				
 				#print game_id[0], " game ", game_counter+1, " for ", team
-				gid = game_id[0]
+				gid = int(game_tuple[game_counter][0])
 
 				game = Game.Game(self.season, gid, team)
 
@@ -84,9 +86,11 @@ class SAF():
 	def get_win_matrix(self):
 		return self.win_mat
 
-	def get_game_id_matrix(self):
-		return self.game_id_mat
+	def get_is_home_matrix(self):
+		return self.is_home_mat
 
+	def get_game_id_matrix(self):
+		return game_id_mat
 
 
 if __name__ == "__main__":

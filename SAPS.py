@@ -18,8 +18,9 @@ class SAPS():
 
 		self.saf = SAF.SAF(self.season)
 		self.SAPS_mat = []
-		self.SAPS_json = []
+		self.SAPS_json_object = []
 		self.game_id_mat = []
+		self.home_SAPS_array = []
 
 	def run_season(self):
 
@@ -27,8 +28,11 @@ class SAPS():
 
 		saf_mat = self.saf.get_saf_matrix()
 		win_mat = self.saf.get_win_matrix()
-		self.game_id_mat = self.saf.get_game_id_matrix()
 		self.SAPS_mat = numpy.zeros(shape=(self.num_teams,len(saf_mat[0])))
+
+		query_string = "SELECT COUNT(*) FROM Games{0};".format(self.season)
+		num_games = self.stats_db.execute_num_query(query_string)/2
+		self.home_SAPS_array = numpy.zeros(num_games)
 
 		team_counter = 0
 		for team in self.teams:
@@ -70,10 +74,12 @@ class SAPS():
 
 	def build_SAPS_json(self):
 
+		self.game_id_mat = self.saf.get_game_id_matrix()
+
 
 def print_json_file(json_object,file_name):
 
-	json_file_name = "./outfiles/{}.json".format(file_name)
+	json_file_name = "./outfiles/{0}.json".format(file_name)
 
 	with open(json_file_name, 'w') as outfile:
 		json.dump(json_object, outfile)
