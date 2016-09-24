@@ -22,6 +22,9 @@ class SAPS():
 		self.home_SAPS_array = []
 		self.game_id_array = []
 
+		# Set parameter [0,1] that determines bias towards game outcome
+		self.alpha = 0.1
+
 	def run_season(self):
 
 		self.saf.run_season()
@@ -40,7 +43,6 @@ class SAPS():
 		team_counter = 0
 		for team in self.teams:
 			for game_counter in range(0,len(win_mat[team_counter])):
-
 				gid = game_id_mat[team_counter,game_counter]
 				result = win_mat[team_counter,game_counter]
 				if result > 1:
@@ -50,8 +52,8 @@ class SAPS():
 
 				if is_home_mat[team_counter,game_counter]:
 					# Record SAPS of home team indexed by game id
-					self.home_SAPS_array[int(gid%10000)] = self.SAPS_mat[team_counter,game_counter]
-					self.game_id_array[int(gid%10000)] = int(gid)
+					self.home_SAPS_array[int(gid%10000)-1] = self.SAPS_mat[team_counter,game_counter]
+					self.game_id_array[int(gid%10000)-1] = int(gid)
 
 			#print "Team: ", team
 			#print "Results: ", win_mat[team_counter]
@@ -72,16 +74,15 @@ class SAPS():
 				plt.ylabel('Rel. Score Adjusted Fenwick')
 				plt.grid(True)
 				plt.axis([1,82,0,1])
-				team_counter += 1
 
-		print self.SAPS_mat
+			team_counter += 1
 
 		plt.show()
 		self.build_SAPS_json()
 
 	def build_SAPS(self,game_SAF,game_result):
 
-		alpha = 0
+		alpha = self.alpha
 
 		game_SAPS = (1-alpha)*game_SAF + alpha*game_result
 
@@ -91,22 +92,23 @@ class SAPS():
 
 		for i in range(0,len(self.home_SAPS_array)):
 			self.SAPS_json_object.append(
-				{"gameID": self.game_id_array[i], "home": self.home_SAPS_array[i]}
+				{"gameID": int(self.game_id_array[i]), "home": self.home_SAPS_array[i]}
 			)
 
-		print_json_file(self.SAPS_json_object,"test1")
+		file_name = "SAF_SAPS_{0}_alpha_{1}".format(self.season,self.alpha)
+		print_json_file(self.SAPS_json_object,file_name)
 
 def print_json_file(json_object,file_name):
 
 	json_file_name = "./outfiles/{0}.json".format(file_name)
 
 	with open(json_file_name, 'w') as outfile:
-		json.dump(json_object, outfile,sort_keys=True,indent=4,ensure_ascii=False)
+		json.dump(json_object, outfile,sort_keys=True,indent=0,ensure_ascii=False)
 
 
 
 if __name__ == "__main__":
 
 	# Initialize class with year on which you want to build SAPS
-	saps = SAPS("20152016",1)
+	saps = SAPS("20142015",1)
 	saps.run_season()

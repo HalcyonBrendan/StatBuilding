@@ -29,6 +29,7 @@ class SAF():
 		self.is_home_mat = numpy.zeros(shape=(self.num_teams,82))
 		team_counter = 0
 		for team in self.teams:
+			print "Computing SAF for ", team
 			query_string = "SELECT gameID,location FROM Games{0} WHERE team=\'{1}\' ORDER BY gameID".format(self.season,team)
 			game_tuples = self.stats_db.execute_query(query_string)
 
@@ -48,7 +49,7 @@ class SAF():
 
 				game_counter +=1
 
-			print "Computing SAF for ", team
+			print self.saf_mat[team_counter]
 			team_counter +=1
 
 
