@@ -34,15 +34,17 @@ class SAF():
 
 			game_counter = 0
 			for game_tuple in game_tuples:
-				
+
 				#print game_id[0], " game ", game_counter+1, " for ", team
-				gid = int(game_tuple[game_counter][0])
+				gid = int(game_tuple[0])
+				location = game_tuple[1]
 
 				game = Game.Game(self.season, gid, team)
 
 				self.win_mat[team_counter,game_counter] = game.get_game_result()
 				self.saf_mat[team_counter,game_counter] = self.compute_SAF(game)
 				self.game_id_mat[team_counter,game_counter] = int(gid)
+				self.is_home_mat[team_counter,game_counter] = int(location=="home")
 
 				game_counter +=1
 
@@ -90,7 +92,7 @@ class SAF():
 		return self.is_home_mat
 
 	def get_game_id_matrix(self):
-		return game_id_mat
+		return self.game_id_mat
 
 
 if __name__ == "__main__":
