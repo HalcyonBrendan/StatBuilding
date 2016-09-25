@@ -49,7 +49,6 @@ class SAF():
 
 				game_counter +=1
 
-			print self.saf_mat[team_counter]
 			team_counter +=1
 
 

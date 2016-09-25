@@ -23,7 +23,7 @@ class SAPS():
 		self.game_id_array = []
 
 		# Set parameter [0,1] that determines bias towards game outcome
-		self.alpha = 0.1
+		self.alpha = 0.05
 
 	def run_season(self):
 
