@@ -23,7 +23,7 @@ class SAPS():
 		self.game_id_array = []
 
 		# Set parameter [0,1] that determines bias towards game outcome
-		self.alpha = 0.05
+		self.alphas = [-0.1,-0.05,-0.01,0,0.01,0.025,0.05,0.1,0.25,0.5,0.75,1]
 
 	def run_season(self):
 
@@ -80,9 +80,7 @@ class SAPS():
 		plt.show()
 		self.build_SAPS_json()
 
-	def build_SAPS(self,game_SAF,game_result):
-
-		alpha = self.alpha
+	def build_SAPS(self,game_SAF,game_result,alpha):
 
 		game_SAPS = (1-alpha)*game_SAF + alpha*game_result
 
@@ -90,13 +88,14 @@ class SAPS():
 
 	def build_SAPS_json(self):
 
-		for i in range(0,len(self.home_SAPS_array)):
-			self.SAPS_json_object.append(
-				{"gameID": int(self.game_id_array[i]), "home": self.home_SAPS_array[i]}
-			)
+		for alpha in self.alphas:
+			for i in range(0,len(self.home_SAPS_array)):
+				self.SAPS_json_object.append(
+					{"gameID": int(self.game_id_array[i]), "home": self.home_SAPS_array[i]}
+				)
 
-		file_name = "SAF_SAPS_{0}_alpha_{1}".format(self.season,self.alpha)
-		print_json_file(self.SAPS_json_object,file_name)
+			file_name = "SAF_SAPS_{0}_alpha_{1}".format(self.season,self.alpha)
+			print_json_file(self.SAPS_json_object,file_name)
 
 def print_json_file(json_object,file_name):
 
