@@ -91,7 +91,7 @@ class SAPS():
 		SAPS_json_object = []
 		for i in range(0,len(self.home_SAPS_array)):
 			SAPS_json_object.append(
-				{"gameID": int(self.game_id_array[i]), "home": self.home_SAPS_array[i]}
+				{"gameID": int(self.game_id_array[i]), "saps": self.home_SAPS_array[i]}
 			)
 
 		file_name = "SAF_SAPS_{0}_alpha_{1}".format(self.season,alpha)
