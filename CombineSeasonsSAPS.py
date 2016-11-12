@@ -27,12 +27,12 @@ class CombineSAPS():
 		with open(json_file_name, 'w') as outfile:
 			json.dump(json_object, outfile,sort_keys=True,indent=0,ensure_ascii=False)
 
-		print "Successfully wrote combined SAPS JSON file to ", json_file_name
+		print "\nSuccessfully wrote combined SAPS JSON file to ", json_file_name, " \n"
 
 
 if __name__ == "__main__":
 
-	out_name = "SAF_SAPS_1415_1516_a_0.json"
-	SAPS_files = ["./outfiles/SAF_SAPS_20142015_alpha_0.json","./outfiles/SAF_SAPS_20152016_alpha_0.json"]
+	out_name = "SAF_SAPS_1314_1415_1516_a_1"
+	SAPS_files = ["./outfiles/SAF_SAPS_20132014_alpha_1.json","./outfiles/SAF_SAPS_20142015_alpha_1.json","./outfiles/SAF_SAPS_20152016_alpha_1.json"]
 	combSAPS = CombineSAPS(SAPS_files,out_name)
 	combSAPS.concat_SAPS()

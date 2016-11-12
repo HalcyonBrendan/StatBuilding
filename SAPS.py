@@ -2,7 +2,7 @@ import time, datetime, math, random
 import numpy, json
 import matplotlib.pyplot as plt
 import HalcyonNHLdb
-import Score_Adjusted_Fenwick as SAF
+import ScoreAdjustedFenwick as SAF
 from config import CONFIG as config
 
 
@@ -94,7 +94,9 @@ class SAPS():
 				{"gameID": int(self.game_id_array[i]), "saps": self.home_SAPS_array[i]}
 			)
 
-		file_name = "SAF_SAPS_{0}_alpha_{1}".format(self.season,alpha)
+		alpha_str = str(alpha)
+		alpha_str = alpha_str.replace('.','p')
+		file_name = "SAF_SAPS_{0}_alpha_{1}".format(self.season,alpha_str)
 		print_json_file(SAPS_json_object,file_name)
 
 def print_json_file(json_object,file_name):
