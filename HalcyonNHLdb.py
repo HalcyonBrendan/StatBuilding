@@ -24,8 +24,8 @@ class HalcyonNHLdb():
 		except:
 			return null
 
-	def build_query(self):
-		print "Build query"
+	def get_connection(self):
+		return self.db
 
 	def strip_unwanted_num_text(self,my_str):
 		chars_to_strip = ["(", ")", ",", " ", "L"]
